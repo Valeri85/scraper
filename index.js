@@ -1,20 +1,21 @@
-import { Builder, By } from 'selenium-webdriver';
-import 'chromedriver';
+const puppeteer = require('puppeteer');
+
+const url = 'https://widget.streamthunder.org';
 
 async function scrape() {
-	const driver = await new Builder().forBrowser('chrome').build();
+	const browser = await puppeteer.launch(); // { headless: false }
 	try {
-		await driver.get('https://widget.streamthunder.org/');
+		const page = await browser.newPage();
+		await page.goto(url);
+		await page.setViewport({ width: 1080, height: 1024 });
 
-		const accordion = await driver.findElement(By.css('.ui-accordion'));
-		const data = await accordion.findElement(By.css('h2'));
+		const text = await page.content();
 
-		console.log(await data.isDisplayed());
+		console.log('text:', text);
 	} catch (error) {
-		throw new Error(error.message);
+		throw new Error(error);
 	} finally {
-		await driver.quit();
+		await browser.close();
 	}
 }
-
 scrape();
