@@ -1,19 +1,20 @@
-const express = require('express');
-const cheerio = require('cheerio');
-const axios = require('axios');
+import { Builder, By } from 'selenium-webdriver';
+import 'chromedriver';
 
-const app = express();
-const PORT = 8000;
-const URL = 'https://widget.streamthunder.org/';
+async function scrape() {
+	const driver = await new Builder().forBrowser('chrome').build();
+	try {
+		await driver.get('https://widget.streamthunder.org/');
 
-axios(URL).then(response => {
-	const html = response.data;
+		const accordion = await driver.findElement(By.css('.ui-accordion'));
+		const data = await accordion.findElement(By.css('h2'));
 
-	console.log(html);
+		console.log(await data.isDisplayed());
+	} catch (error) {
+		throw new Error(error.message);
+	} finally {
+		await driver.quit();
+	}
+}
 
-	const $ = cheerio.load(html);
-
-	console.log($('.ui-accordion', html));
-});
-
-app.listen(PORT, console.log(`server running on port ${PORT}`));
+scrape();
