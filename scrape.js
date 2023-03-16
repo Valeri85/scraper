@@ -19,24 +19,22 @@ export async function scrape() {
 		const gamesArrayVariable = 'var ev_arr = ';
 		const linksArrayVariable = 'var chan_arr = ';
 
-		const startIndexOfGamesArray = scriptContent.search(new RegExp(gamesArrayVariable, 'g'));
+		const startIndexOfGamesArrayVariable = scriptContent.search(new RegExp(gamesArrayVariable, 'g'));
 		const endIndexOfGamesArray = scriptContent.search(new RegExp(';', 'g'));
-		if (startIndexOfGamesArray === -1) throw new Error("Can't find ev_arr variable");
-		const gamesArrayCutLength = gamesArrayVariable.length;
+		if (startIndexOfGamesArrayVariable === -1) throw new Error("Can't find ev_arr variable");
 
-		const startIndexOfLinksObject = scriptContent.search(new RegExp(linksArrayVariable, 'g'));
+		const startIndexOfLinksObjectVariable = scriptContent.search(new RegExp(linksArrayVariable, 'g'));
 		const endIndexOfLinksObject = scriptContent.search(/var adv_1 = /g);
-		if (startIndexOfLinksObject === -1) throw new Error("Can't find chan_arr variable");
-		const linksObjectCutLength = linksArrayVariable.length;
+		if (startIndexOfLinksObjectVariable === -1) throw new Error("Can't find chan_arr variable");
 
-		const gamesData = scriptContent.substring(startIndexOfGamesArray, endIndexOfGamesArray).slice(gamesArrayCutLength).trim();
+		const gamesData = scriptContent.substring(startIndexOfGamesArrayVariable, endIndexOfGamesArray).slice(gamesArrayVariable.length).trim();
 		const linksData = scriptContent
-			.substring(startIndexOfLinksObject, endIndexOfLinksObject)
-			.slice(linksObjectCutLength)
+			.substring(startIndexOfLinksObjectVariable, endIndexOfLinksObject)
+			.slice(linksArrayVariable.length)
 			.trim()
 			.slice(0, -1);
 
-		console.log(JSON.stringify({ gamesData, linksData }));
+		console.log(JSON.parse(gamesData));
 
 		return { gamesData, linksData };
 	} catch (error) {

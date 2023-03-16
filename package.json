@@ -13,8 +13,5 @@
 	"dependencies": {
 		"node-html-parser": "^6.1.5",
 		"puppeteer": "^19.7.4"
-	},
-	"devDependencies": {
-		"nodemon": "^2.0.21"
 	}
 }
