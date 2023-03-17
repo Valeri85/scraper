@@ -1,18 +1,15 @@
 import puppeteer from 'puppeteer';
 import parser from 'node-html-parser';
+import { URL } from './constants/index.js';
 
 export async function scrape() {
-	const URL = 'https://widget.streamthunder.org';
-
-	const browser = await puppeteer.launch(); // { headless: false }
+	const browser = await puppeteer.launch();
 
 	try {
 		const page = await browser.newPage();
 		await page.goto(URL);
-		// await page.setViewport({ width: 1080, height: 1024 });
 		const pageContent = await page.content();
-		if (pageContent === null) throw new Error("Can't scrape page content");
-
+		if (!pageContent) throw new Error("Can't scrape page content");
 		const html = parser.parse(pageContent);
 		const script = html.querySelector('.ui-accordion script');
 		const scriptContent = script.textContent;
@@ -29,14 +26,17 @@ export async function scrape() {
 		const endIndexOfLinksObject = scriptContent.search(new RegExp(variableAfterLinksArray, 'g'));
 		if (startIndexOfLinksObjectVariable === -1) throw new Error("Can't find chan_arr variable");
 
-		const gamesData = scriptContent.substring(startIndexOfGamesArrayVariable, endIndexOfGamesArray).slice(gamesArrayVariable.length).trim();
+		const gamesData = scriptContent.substring(startIndexOfGamesArrayVariable, endIndexOfGamesArray).trim().slice(gamesArrayVariable.length);
 		const linksData = scriptContent
 			.substring(startIndexOfLinksObjectVariable, endIndexOfLinksObject)
 			.trim()
 			.slice(linksArrayVariable.length)
 			.slice(0, -1);
 
-		return { gamesData, linksData };
+		return {
+			games: gamesData,
+			links: linksData,
+		};
 	} catch (error) {
 		throw new Error(error);
 	} finally {
