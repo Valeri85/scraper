@@ -1,12 +1,11 @@
 import http from 'node:http';
-// import data from './data/data.json' assert { type: 'json' };
-import { PORT } from './constants/index.js';
-import { getGames, getLinks } from './controllers/dataController.js';
+import { API_ROUTE, GAMES, LINKS, PORT } from '../constants/index';
+import { getGames, getLinks } from '../controllers/dataController';
 
 export const server = http.createServer((request, response) => {
-	if (request.url === '/api/games' && request.method === 'GET') {
+	if (request.url === `${API_ROUTE}/${GAMES}` && request.method === 'GET') {
 		getGames(request, response);
-	} else if (request.url === '/api/links' && request.method === 'GET') {
+	} else if (request.url === `${API_ROUTE}/${LINKS}` && request.method === 'GET') {
 		getLinks(request, response);
 	} else {
 		response.statusCode = 404;

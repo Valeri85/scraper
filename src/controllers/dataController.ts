@@ -1,6 +1,7 @@
+import { IncomingMessage, ServerResponse } from 'node:http';
 import { find } from '../models/dataModel.js';
 
-export async function getGames(request, response) {
+export async function getGames(request: IncomingMessage, response: ServerResponse) {
 	try {
 		const data = await find();
 
@@ -16,7 +17,7 @@ export async function getGames(request, response) {
 	}
 }
 
-export async function getLinks(request, response) {
+export async function getLinks(request: IncomingMessage, response: ServerResponse) {
 	try {
 		const data = await find();
 

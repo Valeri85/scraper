@@ -1,5 +1,5 @@
 import fs from 'node:fs/promises';
-import { scrape } from './scrape.js';
+import { scrape } from './config/scrape';
 
 const createDataFile = async () => {
 	try {
