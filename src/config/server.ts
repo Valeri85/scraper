@@ -1,21 +1,26 @@
 import http from 'node:http';
+import { gamesRoutes } from '../server/api/games/games.routes';
+import { linksRoutes } from '../server/api/links/links.routes';
 import { API_ROUTE, GAMES, LINKS, PORT } from '../constants/index';
-import { getGames, getLinks } from '../controllers/dataController';
+// import { getGames, getLinks } from '../controllers/dataController';
 
 export const server = http.createServer((request, response) => {
-	if (request.url === `${API_ROUTE}/${GAMES}` && request.method === 'GET') {
-		getGames(request, response);
-	} else if (request.url === `${API_ROUTE}/${LINKS}` && request.method === 'GET') {
-		getLinks(request, response);
-	} else {
-		response.statusCode = 404;
-		response.setHeader('Content-Type', 'application/json');
-		// response.writeHead(404, { 'Content-Type': 'application/json' });
+	gamesRoutes(request, response);
+	linksRoutes(request, response);
 
-		response.write(JSON.stringify({ message: 'Route Not Found' }));
-		response.end();
-		// response.end(JSON.stringify({ message: 'Route Not Found' })));
-	}
+	// if (request.url === `${API_ROUTE}/${GAMES}` && request.method === 'GET') {
+	// 	getGames(request, response);
+	// } else if (request.url === `${API_ROUTE}/${LINKS}` && request.method === 'GET') {
+	// 	getLinks(request, response);
+	// } else {
+	// 	response.statusCode = 404;
+	// 	response.setHeader('Content-Type', 'application/json');
+	// 	// response.writeHead(404, { 'Content-Type': 'application/json' });
+
+	// 	response.write(JSON.stringify({ message: 'Route Not Found' }));
+	// 	response.end();
+	// 	// response.end(JSON.stringify({ message: 'Route Not Found' })));
+	// }
 });
 
 server.listen(PORT, () => {
