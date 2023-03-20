@@ -3,7 +3,7 @@ import { getGamesData } from './games';
 
 export async function getGames(request: IncomingMessage, response: ServerResponse) {
 	try {
-		const data = await getGamesData();
+		const data: any = await getGamesData();
 
 		response.statusCode = 200;
 		response.setHeader('Content-Type', 'application/json');

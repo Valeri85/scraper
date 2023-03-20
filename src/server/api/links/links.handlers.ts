@@ -3,7 +3,7 @@ import { getLinksData } from './links';
 
 export async function getLinks(request: IncomingMessage, response: ServerResponse) {
 	try {
-		const data = await getLinksData();
+		const data: any = await getLinksData();
 
 		response.statusCode = 200;
 		response.setHeader('Content-Type', 'application/json');

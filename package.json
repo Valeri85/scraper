@@ -4,8 +4,9 @@
 	"description": "",
 	"main": "./src/index.js",
 	"scripts": {
-		"dev": "nodemon src/index.ts",
-		"start": "ts-node src/index.ts",
+		"scrape": "ts-node src/index.ts",
+		"upload": "",
+		"server": "ts-node src/config/server.ts",
 		"build": "tsc"
 	},
 	"keywords": [],
@@ -18,7 +19,6 @@
 	},
 	"devDependencies": {
 		"@types/node": "^18.15.3",
-		"nodemon": "^2.0.21",
 		"ts-node": "^10.9.1",
 		"typescript": "^5.0.2"
 	}
