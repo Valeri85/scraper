@@ -5,7 +5,7 @@
 	"main": "./src/index.js",
 	"scripts": {
 		"scrape": "ts-node src/index.ts",
-		"upload": "",
+		"ftp": "",
 		"server": "ts-node src/config/server.ts",
 		"build": "tsc"
 	},

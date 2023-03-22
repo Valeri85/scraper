@@ -10,14 +10,12 @@ async function uploadFileToFTP(localFile, remotePath) {
 			password: '<YOUR_FTP_USER_PASSWORD>',
 			secure: false,
 		});
-
-		// upload the local file located in localFile
-		// to remotePath
 		await client.uploadFrom(localFile, remotePath);
-	} catch (err) {
-		console.log(err);
+	} catch (error) {
+		console.log(error);
+	} finally {
+		await client.close();
 	}
-	client.close();
 }
 
 uploadFileToFTP('src/data/data.json', 'data.json');

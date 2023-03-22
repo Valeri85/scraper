@@ -1,8 +1,7 @@
 import http from 'node:http';
+import { PORT } from '../constants/index';
 import { gamesRoutes } from '../server/api/games/games.routes';
 import { linksRoutes } from '../server/api/links/links.routes';
-import { API_ROUTE, GAMES, LINKS, PORT } from '../constants/index';
-// import { getGames, getLinks } from '../controllers/dataController';
 
 export const server = http.createServer((request, response) => {
 	gamesRoutes(request, response);

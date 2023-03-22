@@ -21,11 +21,11 @@ export async function scrape() {
 
 		const startIndexOfGamesArrayVariable = scriptContent.search(new RegExp(gamesArrayVariable, 'g'));
 		const endIndexOfGamesArray = scriptContent.search(/;/g);
-		if (startIndexOfGamesArrayVariable === -1) throw new Error("Can't find ev_arr variable!");
+		if (startIndexOfGamesArrayVariable === -1) throw new Error("Can't find ev_arr variable for games data!");
 
 		const startIndexOfLinksObjectVariable = scriptContent.search(new RegExp(linksArrayVariable, 'g'));
 		const endIndexOfLinksObject = scriptContent.search(new RegExp(variableAfterLinksArray, 'g'));
-		if (startIndexOfLinksObjectVariable === -1) throw new Error("Can't find chan_arr variable!");
+		if (startIndexOfLinksObjectVariable === -1) throw new Error("Can't find chan_arr variable for links data!");
 
 		const gamesData = scriptContent.substring(startIndexOfGamesArrayVariable, endIndexOfGamesArray).trim().slice(gamesArrayVariable.length);
 		const linksData = scriptContent
