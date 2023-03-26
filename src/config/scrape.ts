@@ -1,6 +1,7 @@
 import puppeteer from 'puppeteer';
 import parser from 'node-html-parser';
 import { URL_SCRAPE } from '../constants/index';
+import { sendSlackNotification } from './notify';
 
 export async function scrape() {
 	const browser = await puppeteer.launch();
@@ -40,13 +41,13 @@ export async function scrape() {
 		};
 	} catch (error) {
 		if (error instanceof Error) {
-			console.log('error message: ', error.message);
-			throw new Error(error.message);
-			//? return error.message;
+			console.log('Scrape notification (line 48): error message: ', error.message);
+			sendSlackNotification('#back-end', `Scrape notification (line 49): ${error.message}`);
+			throw new Error(`Scrape notification (line 50): ${error.message}`);
 		} else {
-			console.log('unexpected error: ', error);
-			throw new Error('An unexpected error occurred');
-			//? return 'An unexpected error occurred';
+			console.log('Scrape notification (line 52): unexpected error: ', error);
+			sendSlackNotification('#back-end', `Scrape notification (line 53): An unexpected error occurred: ${error}`);
+			throw new Error(`Scrape notification (line 54): An unexpected error occurred: ${error}`);
 		}
 	} finally {
 		await browser.close();
