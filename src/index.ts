@@ -1,15 +1,9 @@
-// import fs from 'node:fs/promises';
 import { cronJob } from './config/cron';
-// import { uploadFileOnServer } from './config/ftp';
 import { sendSlackNotification } from './config/notify';
-// import { scrape } from './config/scrape';
 
 const init = async () => {
 	try {
 		cronJob();
-		// const data = await scrape();
-		// await fs.writeFile('./src/data/data.json', JSON.stringify(data));
-		// uploadFileOnServer();
 	} catch (error) {
 		if (error instanceof Error) {
 			console.log('Init notification (line 15): error message: ', error.message);
