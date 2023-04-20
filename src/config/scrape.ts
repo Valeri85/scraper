@@ -28,17 +28,20 @@ export async function scrape() {
 		const endIndexOfLinksObject = scriptContent.search(new RegExp(variableAfterLinksArray, 'g'));
 		if (startIndexOfLinksObjectVariable === -1) throw new Error("Can't find chan_arr variable for links data!");
 
-		const gamesData = scriptContent.substring(startIndexOfGamesArrayVariable, endIndexOfGamesArray).trim().slice(gamesArrayVariable.length);
+		const gamesData = scriptContent
+			.substring(startIndexOfGamesArrayVariable, endIndexOfGamesArray)
+			.trim()
+			.slice(gamesArrayVariable.length);
 		const linksData = scriptContent
 			.substring(startIndexOfLinksObjectVariable, endIndexOfLinksObject)
 			.trim()
 			.slice(linksArrayVariable.length)
 			.slice(0, -1);
 
-		return {
-			games: gamesData,
-			links: linksData,
-		};
+		return JSON.stringify({
+			games: JSON.parse(gamesData),
+			links: JSON.parse(linksData),
+		});
 	} catch (error) {
 		if (error instanceof Error) {
 			console.log('Scrape notification (line 48): error message: ', error.message);
