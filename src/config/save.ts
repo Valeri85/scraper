@@ -1,11 +1,6 @@
 import fs from 'node:fs/promises';
 import { scrape } from './scrape';
 
-// ToDo | remove games after 3 h
-// Todo | Change 'get' method to 'post' on client side and in data.php
-// ToDo | Lazy loading
-//? | should I sort games by time?
-
 async function saveDataLocally() {
 	const newJsonData = await scrape();
 	const newData = JSON.parse(newJsonData);
