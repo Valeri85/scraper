@@ -1,7 +1,6 @@
 import https, { RequestOptions } from 'node:https';
 import querystring from 'node:querystring';
-
-const SLACK_BOT_TOKEN = 'xoxb-4994319332933-4990747693078-xXB0srvjSgIrPLAB4uSsNkSQ';
+import { SLACK_BOT_TOKEN } from '../constants';
 
 export function sendSlackNotification(channel: string, message: string) {
 	const postData = querystring.stringify({

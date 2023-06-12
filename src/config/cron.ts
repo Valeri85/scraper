@@ -1,5 +1,5 @@
-import cron from 'node-cron';
 import { exec } from 'child_process';
+import cron from 'node-cron';
 import { sendSlackNotification } from './notify';
 
 const scriptCommand = 'pnpm run save && pnpm run upload';

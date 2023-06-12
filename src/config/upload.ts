@@ -1,5 +1,5 @@
-import fs from 'node:fs';
 import ftp from 'ftp';
+import fs from 'node:fs';
 import { sendSlackNotification } from './notify';
 
 const localFilePath = 'src/data/data.json';

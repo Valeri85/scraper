@@ -1,11 +1,10 @@
-import puppeteer from 'puppeteer';
 import parser from 'node-html-parser';
+import puppeteer from 'puppeteer';
 import { URL_SCRAPE } from '../constants/index';
 import { sendSlackNotification } from './notify';
 
 export async function scrape() {
 	// New Headless in Puppeteer: https://developer.chrome.com/articles/new-headless/#new-headless-in-puppeteer
-	// https://developer.chrome.com/articles/new-headless/
 	const browser = await puppeteer.launch();
 
 	try {
