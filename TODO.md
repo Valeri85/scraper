@@ -3,6 +3,8 @@
 3. Lazy loading
 4. Should I sort games by `time`?
 
+<!-- Starter data.json -->
+
 {
 "games": [
 {
