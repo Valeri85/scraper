@@ -18,7 +18,7 @@ export async function scrape() {
 
 		const script = html.querySelector('.ui-accordion script');
 		if (!script) throw new Error("Can't select <script></script> tag!");
-		const scriptContent = script.textContent;
+		const scriptContent = script.textContent.replace(/&#305;/gi, '');
 
 		const gamesArrayVariable = 'var ev_arr = ';
 		const linksArrayVariable = 'var chan_arr = ';
@@ -48,13 +48,13 @@ export async function scrape() {
 		});
 	} catch (error) {
 		if (error instanceof Error) {
-			console.log('Scrape notification (line 48): error message: ', error.message);
-			sendSlackNotification('#back-end', `Scrape notification (line 49): ${error.message}`);
-			throw new Error(`Scrape notification (line 50): ${error.message}`);
+			console.log('Scrape notification (line 51): error message: ', error.message);
+			sendSlackNotification('#back-end', `Scrape notification (line 52): ${error.message}`);
+			throw new Error(`Scrape notification (line 53): ${error.message}`);
 		} else {
-			console.log('Scrape notification (line 52): unexpected error: ', error);
-			sendSlackNotification('#back-end', `Scrape notification (line 53): An unexpected error occurred: ${error}`);
-			throw new Error(`Scrape notification (line 54): An unexpected error occurred: ${error}`);
+			console.log('Scrape notification (line 55): unexpected error: ', error);
+			sendSlackNotification('#back-end', `Scrape notification (line 56): An unexpected error occurred: ${error}`);
+			throw new Error(`Scrape notification (line 57): An unexpected error occurred: ${error}`);
 		}
 	} finally {
 		await browser.close();
