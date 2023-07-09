@@ -5,7 +5,7 @@ import { sendSlackNotification } from './notify';
 
 export async function scrape() {
 	// New Headless in Puppeteer: https://developer.chrome.com/articles/new-headless/#new-headless-in-puppeteer
-	const browser = await puppeteer.launch();
+	const browser = await puppeteer.launch({ headless: 'new' });
 
 	try {
 		const page = await browser.newPage();
