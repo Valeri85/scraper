@@ -1,9 +1,11 @@
 import { cronJob } from './config/cron';
 import { sendSlackNotification } from './config/notify';
+import { saveDataLocally } from './config/save';
 
 const init = async () => {
 	try {
 		cronJob();
+		saveDataLocally();
 	} catch (error) {
 		if (error instanceof Error) {
 			console.log('Init notification (line 15): error message: ', error.message);

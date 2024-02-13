@@ -18,3 +18,4 @@ export const restartingMessage = 'Restarting...';
 export const HOSTNAME = 'slack.com';
 export const PATH = '/api/chat.postMessage';
 export const slackErrorMessage = 'Error sending Slack notification: ';
+export const DATA_FILE_PATH = './src/data/data.json';
