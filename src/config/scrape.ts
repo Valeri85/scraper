@@ -4,8 +4,7 @@ import { URL_SCRAPE } from '../constants/index';
 import { sendSlackNotification } from './notify';
 
 export async function scrape() {
-	// New Headless in Puppeteer: https://developer.chrome.com/articles/new-headless/#new-headless-in-puppeteer
-	const browser = await puppeteer.launch({ headless: 'new' });
+	const browser = await puppeteer.launch();
 
 	try {
 		const page = await browser.newPage();
