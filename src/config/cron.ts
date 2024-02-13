@@ -1,18 +1,18 @@
 import { exec as execCb } from 'child_process';
 import cron from 'node-cron';
-import { sendSlackNotification } from './notify';
 import {
 	cronExpression,
 	cronJobError,
 	restartingDelay,
+	restartingMessage,
 	scriptCommand,
 	scriptErrorMessage,
 	scriptErrorPrefix,
 	scriptOutputMessage,
 	slackChannel,
 	unexpectedError,
-	restartingMessage,
 } from '../constants';
+import { sendSlackNotification } from './notify';
 
 let timeoutId: NodeJS.Timeout | null = null;
 

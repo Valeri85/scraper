@@ -15,3 +15,6 @@ export const scriptErrorMessage = 'Cron job notification: Script error:';
 export const cronJobError = 'Cron job notification: Error starting cron:';
 export const unexpectedError = 'Cron job notification: An unexpected error occurred:';
 export const restartingMessage = 'Restarting...';
+export const HOSTNAME = 'slack.com';
+export const PATH = '/api/chat.postMessage';
+export const slackErrorMessage = 'Error sending Slack notification: ';
