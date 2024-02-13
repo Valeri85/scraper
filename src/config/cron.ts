@@ -11,6 +11,7 @@ import {
 	scriptOutputMessage,
 	slackChannel,
 	unexpectedError,
+	restartingMessage,
 } from '../constants';
 
 let timeoutId: NodeJS.Timeout | null = null;
@@ -20,7 +21,7 @@ export const cronJob = () => {
 		runScript();
 		cron.schedule(cronExpression, runScript);
 	} catch (error) {
-		errorHandler(error, cronJobError, cronJob);
+		errorHandler(error, cronJobError);
 		throw error;
 	}
 };
@@ -28,7 +29,8 @@ export const cronJob = () => {
 function runScript() {
 	execCb(scriptCommand, (error, stdout, stderr) => {
 		if (error) {
-			errorHandler(error, scriptErrorPrefix, runScript);
+			errorHandler(error, scriptErrorPrefix);
+			scheduleRetry(runScript);
 			return;
 		}
 		console.log(`${scriptOutputMessage} ${stdout}`);
@@ -36,22 +38,24 @@ function runScript() {
 	});
 }
 
-function errorHandler(error: unknown, message: string, restartFunction: () => void) {
-	const errorMessage = isInstanceOfError(error) ? `${message} ${error.message}` : `${unexpectedError} ${String(error)}`;
+function errorHandler(error: unknown, message: string) {
+	const errorMessage = isErrorInstance(error) ? `${message} ${error.message}` : `${unexpectedError} ${String(error)}`;
 
 	sendSlackNotification(slackChannel, errorMessage);
 	console.error(errorMessage);
+}
 
+function scheduleRetry(retryFunction: () => void) {
 	if (timeoutId) clearTimeout(timeoutId);
 
 	timeoutId = setTimeout(() => {
-		sendSlackNotification(slackChannel, 'Restarting...');
-		console.log('Restarting...');
-		restartFunction();
+		sendSlackNotification(slackChannel, restartingMessage);
+		console.log(restartingMessage);
+		retryFunction();
 	}, restartingDelay);
 }
 
-function isInstanceOfError(error: unknown): error is Error {
+function isErrorInstance(error: unknown): error is Error {
 	return error instanceof Error;
 }
 

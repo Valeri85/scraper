@@ -14,3 +14,4 @@ export const scriptOutputMessage = 'Cron job notification: Script output:';
 export const scriptErrorMessage = 'Cron job notification: Script error:';
 export const cronJobError = 'Cron job notification: Error starting cron:';
 export const unexpectedError = 'Cron job notification: An unexpected error occurred:';
+export const restartingMessage = 'Restarting...';
