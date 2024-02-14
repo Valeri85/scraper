@@ -1,41 +1,20 @@
 import fs from 'node:fs/promises';
 import { DATA_FILE_PATH } from '../constants';
+import { DataType } from '../data/data.types';
+import { GameType } from '../server/api/games/games.types';
+import { LinkType } from '../server/api/links/links.types';
 import { scrape } from './scrape';
-
-interface Game {
-	id: string;
-	id_sport: number;
-	sport: string;
-	date: string;
-	match: string;
-	competition: string;
-	country: string;
-}
-
-interface Link {
-	type: string;
-	link: string;
-	id_web: number | string;
-}
-
-interface Links {
-	[key: string]: Link[];
-}
-
-interface Data {
-	games: Game[];
-	links: Links;
-}
 
 export async function saveDataLocally() {
 	try {
 		const newJsonData = await scrape();
-		const newData: Data = JSON.parse(newJsonData);
+		const newData: DataType = JSON.parse(newJsonData);
+		await writeDataToFile(DATA_FILE_PATH, newData);
 
 		const oldData = await readDataFromFile(DATA_FILE_PATH);
 
 		const gamesArr = filterGamesByTime(oldData.games, new Date());
-		const linksObj = mergeLinks(oldData.links, newData.links);
+		const linksObj: LinkType = { ...oldData.links, ...newData.links };
 
 		await writeDataToFile(DATA_FILE_PATH, { games: gamesArr, links: linksObj });
 	} catch (error) {
@@ -43,7 +22,7 @@ export async function saveDataLocally() {
 	}
 }
 
-async function readDataFromFile(filePath: string): Promise<Data> {
+async function readDataFromFile(filePath: string): Promise<DataType> {
 	try {
 		const jsonData = await fs.readFile(filePath, 'utf-8');
 		return JSON.parse(jsonData);
@@ -53,7 +32,7 @@ async function readDataFromFile(filePath: string): Promise<Data> {
 	}
 }
 
-async function writeDataToFile(filePath: string, data: Data): Promise<void> {
+async function writeDataToFile(filePath: string, data: DataType): Promise<void> {
 	try {
 		await fs.writeFile(filePath, JSON.stringify(data));
 	} catch (error) {
@@ -62,11 +41,7 @@ async function writeDataToFile(filePath: string, data: Data): Promise<void> {
 	}
 }
 
-function mergeLinks(oldLinks: Links, newLinks: Links): Links {
-	return { ...oldLinks, ...newLinks };
-}
-
-function filterGamesByTime(games: Game[], date: Date): Game[] {
+function filterGamesByTime(games: GameType[], date: Date): GameType[] {
 	const threeHours = 3 * 60 * 60 * 1000;
 	const currentTimestamp = date.getTime();
 
