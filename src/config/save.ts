@@ -8,13 +8,13 @@ import { scrape } from './scrape';
 export async function saveDataLocally() {
 	try {
 		const newJsonData = await scrape();
-		const newData: DataType = JSON.parse(newJsonData);
-		await writeDataToFile(DATA_FILE_PATH, newData);
+		const jsonData: DataType = JSON.parse(newJsonData);
+		await writeDataToFile(DATA_FILE_PATH, jsonData);
 
-		const oldData = await readDataFromFile(DATA_FILE_PATH);
+		const dataFromFile = await readDataFromFile(DATA_FILE_PATH);
 
-		const gamesArr = filterGamesByTime(oldData.games, new Date());
-		const linksObj: LinkType = { ...oldData.links, ...newData.links };
+		const gamesArr = filterGamesByTime(dataFromFile.games, new Date());
+		const linksObj: LinkType = { ...dataFromFile.links, ...jsonData.links };
 
 		await writeDataToFile(DATA_FILE_PATH, { games: gamesArr, links: linksObj });
 	} catch (error) {
@@ -56,6 +56,7 @@ function filterGamesByTime(games: GameType[], date: Date): GameType[] {
 		return isWithinThreeHours || isFromPreviousDay;
 	});
 }
+saveDataLocally();
 
 // ! Old code
 
