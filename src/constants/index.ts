@@ -1,6 +1,7 @@
 export const PORT = process.env.PORT || 5000;
 export const LOCAL_HOST = 'http://localhost';
-export const URL_SCRAPE = 'https://streamsthunder.tv';
+export const URL_SCRAPE = 'https://widget.streamsthunder.org/';
+// export const URL_SCRAPE = 'https://streamsthunder.tv';
 const API_VERSION = `v1`;
 export const API_ROUTE = `/api/${API_VERSION}`;
 export const GAMES = 'games';
