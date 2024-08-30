@@ -1,6 +1,6 @@
 import parser from 'node-html-parser';
 import puppeteer from 'puppeteer';
-import { URL_SCRAPE } from '../constants/index';
+import { AFTER_LINKS_ARRAY_VARIABLE, GAMES_ARRAY_VARIABLE, LINKS_ARRAY_VARIABLE, URL_SCRAPE } from '../constants/index';
 import { sendSlackNotification } from './notify';
 
 export async function scrape() {
@@ -19,26 +19,22 @@ export async function scrape() {
 		if (!script) throw new Error("Can't select <script></script> tag!");
 		const scriptContent = script.textContent.replace(/&#305;/gi, '');
 
-		const gamesArrayVariable = 'var ev_arr = ';
-		const linksArrayVariable = 'var chan_arr = ';
-		const variableAfterLinksArray = 'var adv_1 = ';
-
-		const startIndexOfGamesArrayVariable = scriptContent.search(new RegExp(gamesArrayVariable, 'g'));
+		const startIndexOfGamesArrayVariable = scriptContent.search(new RegExp(GAMES_ARRAY_VARIABLE, 'g'));
 		const endIndexOfGamesArray = scriptContent.search(/;/g);
 		if (startIndexOfGamesArrayVariable === -1) throw new Error("Can't find ev_arr variable for games data!");
 
-		const startIndexOfLinksObjectVariable = scriptContent.search(new RegExp(linksArrayVariable, 'g'));
-		const endIndexOfLinksObject = scriptContent.search(new RegExp(variableAfterLinksArray, 'g'));
+		const startIndexOfLinksObjectVariable = scriptContent.search(new RegExp(LINKS_ARRAY_VARIABLE, 'g'));
+		const endIndexOfLinksObject = scriptContent.search(new RegExp(AFTER_LINKS_ARRAY_VARIABLE, 'g'));
 		if (startIndexOfLinksObjectVariable === -1) throw new Error("Can't find chan_arr variable for links data!");
 
 		const gamesData = scriptContent
 			.substring(startIndexOfGamesArrayVariable, endIndexOfGamesArray)
 			.trim()
-			.slice(gamesArrayVariable.length);
+			.slice(GAMES_ARRAY_VARIABLE.length);
 		const linksData = scriptContent
 			.substring(startIndexOfLinksObjectVariable, endIndexOfLinksObject)
 			.trim()
-			.slice(linksArrayVariable.length)
+			.slice(LINKS_ARRAY_VARIABLE.length)
 			.slice(0, -1);
 
 		return JSON.stringify({
