@@ -4,7 +4,7 @@ import { AFTER_LINKS_ARRAY_VARIABLE, GAMES_ARRAY_VARIABLE, LINKS_ARRAY_VARIABLE,
 import { sendSlackNotification } from './notify';
 
 export async function scrape() {
-	const browser = await puppeteer.launch();
+	const browser = await puppeteer.launch({ headless: 'shell' });
 
 	try {
 		const page = await browser.newPage();
