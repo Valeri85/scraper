@@ -4,7 +4,10 @@ import { AFTER_LINKS_ARRAY_VARIABLE, GAMES_ARRAY_VARIABLE, LINKS_ARRAY_VARIABLE,
 import { sendSlackNotification } from './notify';
 
 export async function scrape() {
-	const browser = await puppeteer.launch({ headless: 'shell' });
+	const browser = await puppeteer.launch({
+		headless: 'shell',
+		executablePath: 'c:\\Users\\Valeri\\AppData\\Local\\Google\\Chrome SxS\\Application\\chrome.exe',
+	});
 
 	try {
 		const page = await browser.newPage();
@@ -17,7 +20,7 @@ export async function scrape() {
 
 		const script = html.querySelector('.ui-accordion script');
 		if (!script) throw new Error("Can't select <script></script> tag!");
-		const scriptContent = script.textContent.replace(/&#305;/gi, '');
+		const scriptContent = script.textContent.replace(/&#305;/gi, '').replace(/&#246;/gi, '');
 
 		const startIndexOfGamesArrayVariable = scriptContent.search(new RegExp(GAMES_ARRAY_VARIABLE, 'g'));
 		const endIndexOfGamesArray = scriptContent.search(/;/g);
