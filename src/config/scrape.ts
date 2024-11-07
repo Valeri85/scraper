@@ -20,10 +20,7 @@ export async function scrape() {
 
 		const script = html.querySelector('.ui-accordion script');
 		if (!script) throw new Error("Can't select <script></script> tag!");
-		const scriptContent = script.textContent
-			.replace(/&#305;/gi, '')
-			.replace(/&#246;/gi, '')
-			.replace(/&#228;/gi, '');
+		const scriptContent = script.textContent.replace(/&(#\d+|\w+);/gi, '');
 
 		const startIndexOfGamesArrayVariable = scriptContent.search(new RegExp(GAMES_ARRAY_VARIABLE, 'g'));
 		const endIndexOfGamesArray = scriptContent.search(/;/g);
