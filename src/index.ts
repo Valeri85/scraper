@@ -1,6 +1,6 @@
 import { cronJob } from './config/cron';
 import { sendSlackNotification } from './config/notify';
-import { saveDataLocally } from './config/save';
+// import { saveDataLocally } from './config/save';
 
 const init = async () => {
 	try {
