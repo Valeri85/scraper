@@ -1,21 +1,48 @@
-import { cronJob } from './config/cron';
-import { sendSlackNotification } from './config/notify';
-// import { saveDataLocally } from './config/save';
+// src/index.ts
+import { startScheduler } from './services/scheduler';
+import { startServer } from './server/apiServer';
+import { logInfo, logError } from './utils/logger';
 
-const init = async () => {
+async function main(): Promise<void> {
 	try {
-		cronJob();
-	} catch (error) {
-		if (error instanceof Error) {
-			console.log('Init notification (line 15): error message: ', error.message);
-			sendSlackNotification('#back-end', `Init notification (line 16): ${error.message}`);
-			throw new Error(`Init notification (line 17): ${error.message}`);
-		} else {
-			console.log('Init notification (line 19): unexpected error: ', error);
-			sendSlackNotification('#back-end', 'Init notification (line 20): An unexpected error occurred');
-			throw new Error('Init notification (line: 21): An unexpected error occurred');
-		}
-	}
-};
+		logInfo('Starting application', 'MAIN');
 
-init();
+		// Start scheduler
+		startScheduler();
+
+		// Start API server
+		startServer();
+
+		logInfo('Application started successfully', 'MAIN');
+	} catch (error) {
+		logError('Failed to start application', error, 'MAIN');
+		process.exit(1);
+	}
+}
+
+// Handle uncaught exceptions
+process.on('uncaughtException', error => {
+	logError('Uncaught exception', error, 'PROCESS');
+	process.exit(1);
+});
+
+process.on('unhandledRejection', reason => {
+	logError('Unhandled rejection', reason, 'PROCESS');
+	process.exit(1);
+});
+
+// Graceful shutdown
+process.on('SIGINT', () => {
+	logInfo('Received SIGINT, shutting down gracefully', 'PROCESS');
+	process.exit(0);
+});
+
+process.on('SIGTERM', () => {
+	logInfo('Received SIGTERM, shutting down gracefully', 'PROCESS');
+	process.exit(0);
+});
+
+main().catch(error => {
+	logError('Main function failed', error, 'MAIN');
+	process.exit(1);
+});
