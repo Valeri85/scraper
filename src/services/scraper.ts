@@ -29,15 +29,15 @@ function extractDataFromScript(scriptContent: string): AppData {
 			throw new Error('Links variable not found in script');
 		}
 
-		const linksEndIndex = scriptContent.indexOf(LINKS_END_VARIABLE);
+		const linksEndIndex = scriptContent.indexOf(LINKS_END_VARIABLE, linksStartIndex);
 		if (linksEndIndex === -1) {
 			throw new Error('Links variable end not found');
 		}
 
-		const linksData = scriptContent
-			.substring(linksStartIndex + LINKS_VARIABLE.length, linksEndIndex)
-			.trim()
-			.slice(0, -1); // Remove trailing comma
+		let linksData = scriptContent.substring(linksStartIndex + LINKS_VARIABLE.length, linksEndIndex).trim();
+
+		// Remove trailing semicolon and comma if present
+		linksData = linksData.replace(/[;,]\s*$/, '');
 
 		return {
 			games: JSON.parse(gamesData),
@@ -55,12 +55,30 @@ export async function scrapeData(): Promise<AppData> {
 		logInfo('Starting scraping process', 'SCRAPER');
 
 		browser = await puppeteer.launch({
-			headless: 'shell',
-			args: ['--no-sandbox', '--disable-setuid-sandbox'],
+			headless: true,
+			args: [
+				'--no-sandbox',
+				'--disable-setuid-sandbox',
+				'--disable-dev-shm-usage',
+				'--disable-accelerated-2d-canvas',
+				'--disable-gpu',
+			],
+			executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
 		});
 
 		const page = await browser.newPage();
-		await page.goto(config.scrapeUrl, { waitUntil: 'networkidle2' });
+
+		// Set a reasonable timeout
+		await page.setDefaultNavigationTimeout(60000);
+
+		// Wait for the page to load
+		await page.goto(config.scrapeUrl, {
+			waitUntil: 'domcontentloaded',
+			timeout: 60000,
+		});
+
+		// Wait a bit for JavaScript to execute
+		await new Promise(resolve => setTimeout(resolve, 3000));
 
 		const pageContent = await page.content();
 		if (!pageContent) {
@@ -74,10 +92,14 @@ export async function scrapeData(): Promise<AppData> {
 			throw new Error('Script tag not found or empty');
 		}
 
+		// Clean up HTML entities
 		const scriptContent = script.textContent.replace(/&(#\d+|\w+);/gi, '');
 		const data = extractDataFromScript(scriptContent);
 
-		logInfo('Scraping completed successfully', 'SCRAPER');
+		logInfo(
+			`Scraping completed successfully - Games: ${data.games.length}, Links: ${Object.keys(data.links).length}`,
+			'SCRAPER'
+		);
 		return data;
 	} catch (error) {
 		logError('Scraping failed', error, 'SCRAPER');
