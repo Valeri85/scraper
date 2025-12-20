@@ -6,7 +6,7 @@ export const config: Config = {
 	slackChannel: '#back-end',
 	scrapeUrl: 'https://widget.streamsthunder.org/',
 	dataFilePath: './src/data/data.json',
-	cronExpression: '*/15 * * * *',
+	cronExpression: '*/10 * * * *',
 	retryDelay: 10000,
 	ftp: {
 		host: '31.31.196.245',
