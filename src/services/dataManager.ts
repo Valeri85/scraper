@@ -16,8 +16,32 @@ async function ensureDataDirectory(): Promise<void> {
 
 async function readDataFile(): Promise<AppData> {
 	try {
-		const data = await fs.readFile(config.dataFilePath, 'utf-8');
-		return JSON.parse(data);
+		const raw = await fs.readFile(config.dataFilePath, 'utf-8');
+
+		// Strip UTF-8 BOM and any null/control characters that break JSON.parse
+		const cleaned = raw
+			.replace(/^\uFEFF/, '') // BOM
+			.replace(/\0/g, '') // null bytes
+			.trim();
+
+		if (!cleaned) {
+			logInfo('Data file is empty, starting fresh', 'DATA_MANAGER');
+			return { games: [], links: {} };
+		}
+
+		try {
+			return JSON.parse(cleaned);
+		} catch (parseError) {
+			logError(
+				`Data file contains invalid JSON, starting fresh. Parse error: ${parseError instanceof Error ? parseError.message : String(parseError)}`,
+				null,
+				'DATA_MANAGER',
+			);
+			// Back up the bad file so we don't silently lose data
+			const backupPath = config.dataFilePath + '.bak';
+			await fs.writeFile(backupPath, raw).catch(() => {});
+			return { games: [], links: {} };
+		}
 	} catch (error) {
 		if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
 			logInfo('Data file not found, creating new one', 'DATA_MANAGER');
@@ -30,10 +54,17 @@ async function readDataFile(): Promise<AppData> {
 async function writeDataFile(data: AppData): Promise<void> {
 	try {
 		await ensureDataDirectory();
-		await fs.writeFile(config.dataFilePath, JSON.stringify(data, null, 2));
+
+		const json = JSON.stringify(data, null, 2);
+
+		// Write to a temp file first, then rename — prevents partial writes corrupting the file
+		const tmpPath = config.dataFilePath + '.tmp';
+		await fs.writeFile(tmpPath, json, 'utf-8');
+		await fs.rename(tmpPath, config.dataFilePath);
+
 		logInfo(
 			`Data written successfully - Games: ${data.games.length}, Links: ${Object.keys(data.links).length}`,
-			'DATA_MANAGER'
+			'DATA_MANAGER',
 		);
 	} catch (error) {
 		throw new Error(`Failed to write data file: ${error instanceof Error ? error.message : String(error)}`);
@@ -46,10 +77,8 @@ function filterRecentGames(games: Game[]): Game[] {
 
 	const filtered = games.filter(game => {
 		try {
-			// Parse the date string (format: "2025-07-22 03:10:00")
 			const gameTime = new Date(game.date).getTime();
 
-			// Check if the date is valid
 			if (isNaN(gameTime)) {
 				logError(`Invalid game date: ${game.date}`, null, 'DATA_MANAGER');
 				return false;
@@ -68,21 +97,16 @@ function filterRecentGames(games: Game[]): Game[] {
 }
 
 function processData(newData: AppData, existingData: AppData): AppData {
-	// Filter games within 10 hours of current time
 	const filteredGames = filterRecentGames(newData.games);
-
-	// Merge links - only keep links for games that exist
 	const gameIds = new Set(filteredGames.map(g => g.id));
 	const mergedLinks: Record<string, any> = {};
 
-	// Add links from new data for existing games
 	for (const [gameId, links] of Object.entries(newData.links)) {
 		if (gameIds.has(gameId)) {
 			mergedLinks[gameId] = links;
 		}
 	}
 
-	// Keep existing links for games that are still in the filtered list
 	for (const [gameId, links] of Object.entries(existingData.links)) {
 		if (gameIds.has(gameId) && !mergedLinks[gameId]) {
 			mergedLinks[gameId] = links;
@@ -91,7 +115,7 @@ function processData(newData: AppData, existingData: AppData): AppData {
 
 	logInfo(
 		`Processed data: ${filteredGames.length} games, ${Object.keys(mergedLinks).length} game links`,
-		'DATA_MANAGER'
+		'DATA_MANAGER',
 	);
 
 	return {
@@ -104,16 +128,9 @@ export async function updateData(): Promise<void> {
 	try {
 		logInfo('Starting data update process', 'DATA_MANAGER');
 
-		// Scrape new data
 		const newData = await scrapeData();
-
-		// Read existing data
 		const existingData = await readDataFile();
-
-		// Process and merge data
 		const processedData = processData(newData, existingData);
-
-		// Save updated data
 		await writeDataFile(processedData);
 
 		logInfo('Data update completed successfully', 'DATA_MANAGER');
@@ -128,7 +145,6 @@ export async function readData(): Promise<AppData> {
 		return await readDataFile();
 	} catch (error) {
 		logError('Failed to read data', error, 'DATA_MANAGER');
-		// Return empty data instead of throwing to keep API working
 		return { games: [], links: {} };
 	}
 }
